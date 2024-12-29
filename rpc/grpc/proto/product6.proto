@@ -1,0 +1,21 @@
+
+syntax = "proto3";
+
+package proto;
+
+import "google/protobuf/wrappers.proto";
+
+option go_package = "model/;pb";
+
+message Order6 {
+  string id = 1;
+  repeated string items = 2;
+  string description = 3;
+  float price = 4;
+  google.protobuf.StringValue destination = 5;
+}
+
+service OrderManagement6 {
+  rpc addOrder(Order6) returns (google.protobuf.StringValue);
+  rpc updateOrders(stream Order6) returns (google.protobuf.StringValue);
+}

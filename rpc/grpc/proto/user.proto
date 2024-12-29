@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+// 决定生成的.go文件的存储位置
+option go_package = "model/;pb";
+
+// .proto文件的包名，与将来生成的.go文件的包名无关
+package proto;
+
+// 定义服务及服务的能力
+service UserService {
+  rpc GetUserInfo(UserRequest) returns (UserResponse) {};
+}
+
+// 定义请求消息体
+message UserRequest {
+  string name = 1;
+}
+
+// 定义响应消息体
+message UserResponse {
+  int32 id = 1;
+  string username = 2;
+  string nickname = 3;
+}

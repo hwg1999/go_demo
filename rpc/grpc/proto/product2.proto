@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package proto;
+
+// 引入另外一个文件的pb。google/protobuf/wrappers.proto是google内置的类型
+import "google/protobuf/wrappers.proto";
+
+option go_package = "model/;pb";
+
+message Order2 {
+  string id = 1;
+  repeated string items = 2;
+  string description = 3;
+  float price = 4;
+  string destination = 5;
+}
+
+service OrderManagement2 {
+  rpc searchOrders(google.protobuf.StringValue) returns (stream Order2);
+}
