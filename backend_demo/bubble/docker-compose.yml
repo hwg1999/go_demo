@@ -1,0 +1,52 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bubble-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=123456
+      - MYSQL_DB=bubble
+    networks:
+      - app-network
+    # 增加健康检查，确保 mysql 可用后再启动 app
+    healthcheck:
+      test: ["CMD", "nc", "-z", "mysql", "3306"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  mysql:
+    image: mysql:8.0
+    container_name: bubble-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456  # 设置 root 用户的密码
+      MYSQL_DATABASE: bubble
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+    # MySQL 也可以增加健康检查来确保它在启动时能接受连接
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
+    driver: bridge
