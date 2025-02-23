@@ -1,0 +1,37 @@
+version: "3"
+services:
+  mysql8019:
+    image: "mysql:8.0.19"
+    ports:
+      - "33061:3306"
+    command: "--default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root1234"
+      MYSQL_DATABASE: "bluebell"
+      MYSQL_PASSWORD: "root1234"
+    volumes:
+      - ./sql/init.sql:/data/application/init.sql
+    networks:
+      - app_network  # 使用自定义网络
+
+  redis507:
+    image: "redis:5.0.7"
+    ports:
+      - "26379:6379"
+    networks:
+      - app_network  # 使用自定义网络
+
+  bluebell_app:
+    build: .
+    command: sh -c "./wait-for.sh 127.0.0.1:3306 127.0.0.1:6379 -- ./bluebell_app ./conf/config.yaml"
+    depends_on:
+      - mysql8019
+      - redis507
+    ports:
+      - "8888:8084"
+    networks:
+      - app_network  # 使用自定义网络
+
+networks:
+  app_network:
+    driver: bridge  # 使用默认的桥接网络驱动
